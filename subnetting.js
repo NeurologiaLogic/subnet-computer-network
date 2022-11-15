@@ -1,8 +1,11 @@
 let searches =
-"172.16.64.64/27\
+"172.16.64.64/16\
 ".split(" ").filter(val=>val!=="")
 
-
+let resultsOfValidation =[]
+const autoValidation = () =>{
+  return resultsOfValidation.filter(val=>val[0]!=val[1])
+}
 const intToDecimal = (val) => {
   val = parseInt(val)
   let value = (!val) ? "00000000" : ""
@@ -91,19 +94,39 @@ const printDots = (val) => {
 }
 for (let search of searches) {
   const [ip, subnet] = search.split('/')
-  automationValidation.push()
+  let Ip = decimalToIp(printDots(ipToDecimal(ip)))
+  let IpInDecimal = printDots(ipToDecimal(ip))
+  let SubnetMask = decimalToIp(printDots(subnetToDecimal(subnet)))
+  let SubnetMaskInDecimal = printDots(subnetToDecimal(subnet))
+  let Na = decimalToIp(printDots(AND(ipToDecimal(ip),subnetToDecimal(subnet))))
+  let NaInDecimal = printDots(AND(ipToDecimal(ip),subnetToDecimal(subnet)))
+  let Ba = decimalToIp(printDots(OR(ipToDecimal(ip),subnetToDecimal(subnet))))
+  let BaInDecimal = printDots(OR(ipToDecimal(ip),subnetToDecimal(subnet)))
+  resultsOfValidation.push([ip,Na])
   console.log("==================================================================")
-  console.log(`IP: ${decimalToIp(printDots(ipToDecimal(ip)))}`)
-  console.log(`IP in Decimal: ${printDots(ipToDecimal(ip))}`)
-  console.log(`Subnet mask: ${decimalToIp(printDots(subnetToDecimal(subnet)))}`)
-  console.log(`Subnet mask in Decimal: ${printDots(subnetToDecimal(subnet))}`)
-  console.log(`Network Address: ${decimalToIp(printDots(AND(ipToDecimal(ip),subnetToDecimal(subnet))))}`)
-  console.log(`Network Address in Decimal: ${printDots(AND(ipToDecimal(ip),subnetToDecimal(subnet)))}`)
-  console.log(`Broadcast Address: ${decimalToIp(printDots(OR(ipToDecimal(ip),subnetToDecimal(subnet))))}`)
-  console.log(`Broadcast Address in Decimal: ${printDots(OR(ipToDecimal(ip),subnetToDecimal(subnet)))}`)
+  console.log(`IP: ${Ip}`)
+  console.log(`IP in Decimal: ${IpInDecimal}`)
+  console.log(`Subnet mask: ${SubnetMask}`)
+  console.log(`Subnet mask in Decimal: ${SubnetMaskInDecimal}`)
+  console.log(`Network Address: ${Na}`)
+  console.log(`Network Address in Decimal: ${NaInDecimal}`)
+  console.log(`Broadcast Address: ${Ba}`)
+  console.log(`Broadcast Address in Decimal: ${BaInDecimal}`)
 }
-//diatas untuk mengvalidasi NA sebuah network
+let validationResult = autoValidation()
+if(validationResult.length){
+  console.log('\x1b[31m%s','Some of the NA are incorrect');
+  for(let i of validationResult){
+    console.log(`IP: ${i[0]} has NA: ${i[1]}`)
+  }
+  console.log('\x1b[0m')
+}
+else{
+  console.log('\x1b[32m%s\x1b[0m','All of the NA are Correct');
+}
 
+
+//diatas untuk mengvalidasi NA dan BA sebuah network
 const NA = "172.16.128.0/18"
 const names =
   "IBOX\
@@ -128,9 +151,8 @@ const sizes =
   .split(" ")
   .filter(str => str !== "")
   .map(val => parseInt(val))
-console.log(names, sizes)
 if (names.length !== sizes.length) {
-  console.log("Error: names and sizes must have same length")
+  console.log("Error: names and sizes must have same length\nThe names must not be separated by space")
   process.exit(1)
 }
 let gedung = []
