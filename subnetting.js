@@ -1,4 +1,4 @@
-let searches =
+let listOfHosts =
   "172.16.64.64/16\
 ".split(" ").filter(val => val !== "")
 
@@ -92,40 +92,55 @@ const printDots = (val) => {
   }
   return value
 }
-for (let search of searches) {
-  const [ip, subnet] = search.split('/')
-  let Ip = decimalToIp(printDots(ipToDecimal(ip)))
-  let IpInDecimal = printDots(ipToDecimal(ip))
-  let SubnetMask = decimalToIp(printDots(subnetToDecimal(subnet)))
-  let SubnetMaskInDecimal = printDots(subnetToDecimal(subnet))
-  let Na = decimalToIp(printDots(AND(ipToDecimal(ip), subnetToDecimal(subnet))))
-  let NaInDecimal = printDots(AND(ipToDecimal(ip), subnetToDecimal(subnet)))
-  let Ba = decimalToIp(printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet))))
-  let BaInDecimal = printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet)))
-  resultsOfValidation.push([ip, Na])
-  console.log("==================================================================")
-  console.log(`IP: ${Ip}`)
-  console.log(`IP in Decimal: ${IpInDecimal}`)
-  console.log(`Subnet mask: ${SubnetMask}`)
-  console.log(`Subnet mask in Decimal: ${SubnetMaskInDecimal}`)
-  console.log(`Network Address: ${Na}`)
-  console.log(`Network Address in Decimal: ${NaInDecimal}`)
-  console.log(`Broadcast Address: ${Ba}`)
-  console.log(`Broadcast Address in Decimal: ${BaInDecimal}`)
-}
-let validationResult = autoValidation()
-if (validationResult.length) {
-  console.log('\x1b[31m%s', 'Some of the NA are incorrect');
-  for (let i of validationResult) {
-    console.log(`IP: ${i[0]} has NA: ${i[1]}`)
+/*
+  @NaHost -> ip address with subnet, ex:192.168.1.1/24
+*/
+const validateNAandBA=(listOfHosts)=>{
+  for (let search of listOfHosts) {
+    const [ip, subnet] = search.split('/')
+    let Ip = decimalToIp(printDots(ipToDecimal(ip)))
+    let IpInDecimal = printDots(ipToDecimal(ip))
+    let SubnetMask = decimalToIp(printDots(subnetToDecimal(subnet)))
+    let SubnetMaskInDecimal = printDots(subnetToDecimal(subnet))
+    let Na = decimalToIp(printDots(AND(ipToDecimal(ip), subnetToDecimal(subnet))))
+    let NaInDecimal = printDots(AND(ipToDecimal(ip), subnetToDecimal(subnet)))
+    let Ba = decimalToIp(printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet))))
+    let BaInDecimal = printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet)))
+    resultsOfValidation.push([ip, Na])
+    console.log("==================================================================")
+    console.log(`IP: ${Ip}`)
+    console.log(`IP in Decimal: ${IpInDecimal}`)
+    console.log(`Subnet mask: ${SubnetMask}`)
+    console.log(`Subnet mask in Decimal: ${SubnetMaskInDecimal}`)
+    console.log(`Network Address: ${Na}`)
+    console.log(`Network Address in Decimal: ${NaInDecimal}`)
+    console.log(`Broadcast Address: ${Ba}`)
+    console.log(`Broadcast Address in Decimal: ${BaInDecimal}`)
   }
-  console.log('\x1b[0m')
-} else {
-  console.log('\x1b[32m%s\x1b[0m', 'All of the NA are Correct');
+  let validationResult = autoValidation()
+  if (validationResult.length) {
+    console.log('\x1b[31m%s', 'Some of the NA are incorrect');
+    for (let i of validationResult) {
+      console.log(`IP: ${i[0]} has NA: ${i[1]}`)
+    }
+    console.log('\x1b[0m')
+  } else {
+    console.log('\x1b[32m%s\x1b[0m', 'All of the NA are Correct');
+  }
 }
-
-
+validateNAandBA(listOfHosts)
 //diatas untuk mengvalidasi NA dan BA sebuah network
+let NAHost = "172.20.0.0/16"
+const ipHostSize = (NAHost) => {
+  NAHost = NAHost.split('/')
+  console.log(`IP:${NAHost[0]}/${NAHost[1]}`)
+  console.log(`Total number of host: ${(2**NAHost[1])-2}`)
+}
+/*
+  @NaHost -> ip address with subnet, ex:192.168.1.1/24
+*/
+ipHostSize(NAHost)
+//diatas untuk mengecek berapa banyak host yang bisa di tampung sebuah address
 const NA = "172.16.128.0/18"
 const names =
   `IBOX
@@ -156,6 +171,22 @@ if (names.length !== sizes.length) {
   console.log("Error: names and sizes must have same length\nThe names must not be separated by space")
   process.exit(1)
 }
+
+const TotalBrandwidthNeeded = (hosts, max_brandwidth_per_device) => {
+  if (hosts) {
+    let total_brandwidth = hosts
+      .reduce((prev,val) => prev+val,0)* max_brandwidth_per_device
+      console.log(`Total_brandwidth needed: ${total_brandwidth}kbps [brandwidth per device: ${max_brandwidth_per_device} kpbs]`)
+      console.log(``)
+    return total_brandwidth
+  }
+}
+/*
+  @sizes -> array of host size
+  @brandwith size per device
+*/
+TotalBrandwidthNeeded(sizes, 500)
+//diatas untuk mengecek kebutuhan brandwidth
 
 let gedung = []
 names.map((name, index) => {
@@ -303,7 +334,7 @@ const generateSubnet = (type) => {
     console.log(`NA: ${localNA}/${cidr}`)
     console.log(`Range IP: ${range_below}/${cidr} - ${range_top}/${cidr}`)
     console.log(`BA: ${localBA}/${cidr}`)
-    console.log(`Number of avl host: ${(2**k)-2}`)
+    console.log(`Number of avl host: 0-${(2**k)-2}`)
     console.log(`Subnet: ${cidr}`)
     console.log(`Subnet in Decimal: ${subnetFromK(k)}`)
     // console.log(`${Object.keys(value)},`, `${Object.values(value)},`, `${localNA}/${cidr},`, `${range_below}/${cidr} - ${range_top}/${cidr},`, `${getRangeIP(localBA[0], -1)}/${cidr},`, `${decimalSubnet}\n`)
