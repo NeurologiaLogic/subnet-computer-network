@@ -1,6 +1,6 @@
 let listOfHosts =
-  "172.16.64.64/16\
-".split(" ").filter(val => val !== "")
+  `172.16.64.64/16
+`.split(/[\s\n]/).filter(val => val !== "")
 
 let resultsOfValidation = []
 const autoValidation = () => {
@@ -93,7 +93,7 @@ const printDots = (val) => {
   return value
 }
 /*
-  @NaHost -> ip address with subnet, ex:192.168.1.1/24
+  @listOfHosts -> list of ip addresses to validate
 */
 const validateNAandBA=(listOfHosts)=>{
   for (let search of listOfHosts) {
@@ -127,6 +127,7 @@ const validateNAandBA=(listOfHosts)=>{
   } else {
     console.log('\x1b[32m%s\x1b[0m', 'All of the NA are Correct');
   }
+  console.log("==================================================================")
 }
 validateNAandBA(listOfHosts)
 //diatas untuk mengvalidasi NA dan BA sebuah network
@@ -141,27 +142,21 @@ const ipHostSize = (NAHost) => {
 */
 ipHostSize(NAHost)
 //diatas untuk mengecek berapa banyak host yang bisa di tampung sebuah address
-const NA = "172.16.128.0/18"
+const NA = "172.20.0.0/16"
 const names =
-  `IBOX
-  Beehive
-  Starbucks
-  BCA
-  LKC
-  ATM_BCA
-  SRSC
-  Admisi`
+  `Layanan
+  Keuangan
+  Penjadwalan
+  Operasional
+  Marketing`
   .split(/[\s\n]/)
   .filter(str => str !== "")
 const sizes =
-  `5
-  5
-  1
-  5
+  `10
+  14
   20
-  5
-  5
-  10`
+  40
+  50`
   .split(/[\s\n]/)
   .filter(str => str !== "")
   .map(val => parseInt(val))
@@ -171,12 +166,29 @@ if (names.length !== sizes.length) {
   console.log("Error: names and sizes must have same length\nThe names must not be separated by space")
   process.exit(1)
 }
-
-const TotalBrandwidthNeeded = (hosts, max_brandwidth_per_device) => {
+const brandwidthConversion = (size) =>{
+  const sizeNetwork={
+    kbps : 1000,
+    mbps : 1000**2,
+    gbps : 1000**3
+  }
+  if(size<sizeNetwork.kbps){
+    return `${size} Kpbs`
+  }
+  else if(size<sizeNetwork.mbps){
+    return `${size/sizeNetwork.kbps} Mbps`
+  }
+  else{
+    return `${size/sizeNetwork.mbps} Gbps`
+  }
+}
+const TotalBrandwidthNeeded = (names,hosts, max_brandwidth_per_device) => {
   if (hosts) {
+    hosts.map((host,index)=>console.log(`${names[index]} needs ${brandwidthConversion(host*max_brandwidth_per_device)}`))
     let total_brandwidth = hosts
       .reduce((prev,val) => prev+val,0)* max_brandwidth_per_device
-      console.log(`Total_brandwidth needed: ${total_brandwidth}kbps [brandwidth per device: ${max_brandwidth_per_device} kpbs]`)
+      console.log(`Total_brandwidth needed: ${brandwidthConversion(total_brandwidth)} [brandwidth per device: ${max_brandwidth_per_device} kpbs]`)
+      console.log("==================================================================")
       console.log(``)
     return total_brandwidth
   }
@@ -185,7 +197,7 @@ const TotalBrandwidthNeeded = (hosts, max_brandwidth_per_device) => {
   @sizes -> array of host size
   @brandwith size per device
 */
-TotalBrandwidthNeeded(sizes, 500)
+TotalBrandwidthNeeded(names,sizes, 500)
 //diatas untuk mengecek kebutuhan brandwidth
 
 let gedung = []
@@ -343,4 +355,4 @@ const generateSubnet = (type) => {
   })
 }
 
-generateSubnet('VLSM') //VLSM|FLSM
+// generateSubnet('VLSM') //VLSM|FLSM
