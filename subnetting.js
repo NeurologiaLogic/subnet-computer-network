@@ -136,7 +136,7 @@ const validateNAandBA=(listOfHosts)=>{
   }
   console.log("==================================================================")
 }
-validateNAandBA(listOfHosts)
+// validateNAandBA(listOfHosts)
 //diatas untuk mengvalidasi NA dan BA sebuah network
 let NAHost = "172.20.0.0/16"
 const ipHostSize = (NAHost) => {
@@ -151,19 +151,25 @@ ipHostSize(NAHost)
 //diatas untuk mengecek berapa banyak host yang bisa di tampung sebuah address
 const NA = "172.20.1.0/16"
 const names =
-  `Layanan
-  Keuangan
-  Penjadwalan
-  Operasional
-  Marketing`
+`Jurusan_B
+Jurusan_A
+Kelas_A
+Kelas_B
+Kelas_C
+Kelas_D
+Kelas_E
+Kelas_F`
   .split(/[\n]/)
   .filter(str => str !== "")
 const sizes =
-  `10
-  14
-  20
-  40
-  50`
+`133
+65
+2
+2
+2
+2
+2
+2`
   .split(/[\s\n]/)
   .filter(str => str !== "")
   .map(val => parseInt(val))
@@ -221,7 +227,7 @@ gedung.sort((a, b) => Object.values(b)[0] - Object.values(a)[0])
 //4. either sort as a long list or sort per lantai
 const getK = (size) => {
   let k = 0
-  while (size + 2 >= 2 ** k) {
+  while (size + 2 > 2 ** k) {
     ++k
   }
   return k;
@@ -336,8 +342,8 @@ const generateSubnet = (type) => {
   appendData("Name,Number of Electronics,NA,Network Range,BA,Subnet Mask\n");
   appendData("==============================================================\n");
   Object.entries(gedung).forEach(([_, value]) => {
-    // console.log("==================================================================")
-    // console.log(`Gedung ${Object.keys(value)}: ${ Object.values(value)[0]}`)
+    console.log("==================================================================")
+    console.log(`Gedung ${Object.keys(value)}: ${ Object.values(value)[0]}`)
     let k = (type == "VLSM") ? getK(Object.values(value)[0]) : getK(Object.values(gedung[0])[0])
     let cidr = 32 - k;
     let localNA = null
@@ -350,13 +356,13 @@ const generateSubnet = (type) => {
     nextNA = `${getNextNA(localNA,k)}`
     localBA = getBA(nextNA)
     range_top = getUpperBoundIPRange(nextNA)
-    // console.log(`NA: ${localNA}/${cidr}`)
-    // console.log(`Range IP: ${range_below}/${cidr} - ${range_top}/${cidr}`)
-    // console.log(`BA: ${localBA}/${cidr}`)
-    // console.log(`Number of avl host: 0-${(2**k)-2}`)
-    // console.log(`Subnet: ${cidr}`)
-    // console.log(`Subnet in Decimal: ${subnetFromK(k)}`)
-    console.log(`${Object.keys(value)},${nextNA}/${cidr},${localBA}/${cidr},${range_below}/${cidr},${range_top}/${cidr}`)
+    console.log(`NA: ${localNA}/${cidr}`)
+    console.log(`Range IP: ${range_below}/${cidr} - ${range_top}/${cidr}`)
+    console.log(`BA: ${localBA}/${cidr}`)
+    console.log(`Number of avl host: 0-${(2**k)-2}`)
+    console.log(`Subnet: ${cidr}`)
+    console.log(`Subnet in Decimal: ${subnetFromK(k)}`)
+    // console.log(`${Object.keys(value)},${nextNA}/${cidr},${localBA}/${cidr},${range_below}/${cidr},${range_top}/${cidr}`)
     // console.log(`${Object.keys(value)},`, `${Object.values(value)},`, `${localNA}/${cidr},`, `${range_below}/${cidr} - ${range_top}/${cidr},`, `${getRangeIP(localBA[0], -1)}/${cidr},`, `${decimalSubnet}\n`)
     // appendData(`${Object.keys(value)},`, `${Object.values(value)},`, `${localNA}/${cidr},`, `${range_below}/${cidr} - ${range_top}/${cidr},`, `${localBA}/${cidr},`, `${decimalSubnet}\n`)
     firstIP = `${nextNA}/${firstIP[1]}`.split('/')
