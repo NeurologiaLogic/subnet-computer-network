@@ -1,6 +1,12 @@
 let listOfHosts =
-  `172.16.64.64/16
+  `172.16.1.0/16
+  172.18.1.0/16
+  172.18.0.255/16
+  172.17.0.0/16
 `.split(/[\s\n]/).filter(val => val !== "")
+// 172.16.0.0/16
+//
+
 
 let resultsOfValidation = []
 const autoValidation = () => {
@@ -107,6 +113,7 @@ const validateNAandBA=(listOfHosts)=>{
     let Ba = decimalToIp(printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet))))
     let BaInDecimal = printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet)))
     resultsOfValidation.push([ip, Na])
+    let cidr = 32 - subnet;
     console.log("==================================================================")
     console.log(`IP: ${Ip}`)
     console.log(`IP in Decimal: ${IpInDecimal}`)
@@ -131,11 +138,11 @@ const validateNAandBA=(listOfHosts)=>{
 }
 validateNAandBA(listOfHosts)
 //diatas untuk mengvalidasi NA dan BA sebuah network
-let NAHost = "172.20.0.0/16"
+let NAHost = "172.1.2.0/23"
 const ipHostSize = (NAHost) => {
   NAHost = NAHost.split('/')
   console.log(`IP:${NAHost[0]}/${NAHost[1]}`)
-  console.log(`Total number of host: ${(2**NAHost[1])-2}`)
+  console.log(`Total number of host: ${(2**(32-NAHost[1]))-2}`)
 }
 /*
   @NaHost -> ip address with subnet, ex:192.168.1.1/24
@@ -355,4 +362,4 @@ const generateSubnet = (type) => {
   })
 }
 
-// generateSubnet('VLSM') //VLSM|FLSM
+generateSubnet('VLSM') //VLSM|FLSM
