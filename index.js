@@ -42,4 +42,4 @@ const gedung = [
 const NAHost = '172.20.0.0/16';
 ipHostSize(NAHost);
 const sortedGedung = sort(gedung)
-generateSubnet(NAHost,sortedGedung, 'FLSM'); // can be either VLSM or FLSM
+generateSubnet(NAHost,sortedGedung, 'VLSM'); // can be either VLSM or FLSM

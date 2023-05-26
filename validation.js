@@ -15,7 +15,6 @@ const validateNAandBA = (listOfHosts) => {
     let Ba = decimalToIp(printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet))))
     let BaInDecimal = printDots(OR(ipToDecimal(ip), subnetToDecimal(subnet)))
     resultsOfValidation.push([ip, Na])
-    let cidr = 32 - subnet;
     console.log("==================================================================")
     console.log(`IP: ${Ip}`)
     console.log(`IP in Decimal: ${IpInDecimal}`)
